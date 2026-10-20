@@ -29,7 +29,11 @@ MUSL_VER = 1.2.3
 # By default source archives are downloaded with wget. curl is also an option.
 
 # DL_CMD = wget -c -O
-DL_CMD = curl -C - -L -o
+# --fail and the retries: `make -j` originally started every download at once,
+#  and a GNU mirror gave a 403 forbidden. That failure was treated as not a
+#  failure. Handle the failure and add a retry. Though it shouldn't be necessary
+#  anymore as we download one at a time. 
+DL_CMD = curl -C - -L --fail --retry 5 --retry-delay 10 --retry-all-errors -o
 
 # Something like the following can be used to produce a static-linked
 # toolchain that's deployable to any system with matching arch, using

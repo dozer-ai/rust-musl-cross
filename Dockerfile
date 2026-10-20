@@ -48,7 +48,8 @@ RUN cd /tmp && \
     export CFLAGS="-fPIC -g1 $CFLAGS" && \
     export TARGET=$MUSL_TARGET && \
     if [ `dpkg --print-architecture` = 'armhf' ] && [ `uname -m` = 'aarch64' ]; then SETARCH=linux32; else SETARCH= ; fi && \
-    $SETARCH make -j$(nproc) > /tmp/musl-cross-make.log && \
+    $SETARCH make extract_all > /tmp/musl-cross-make.log && \
+    $SETARCH make -j$(nproc) >> /tmp/musl-cross-make.log && \
     $SETARCH make install >> /tmp/musl-cross-make.log && \
     ln -s /usr/local/musl/bin/$TARGET-strip /usr/local/musl/bin/musl-strip && \
     cd /tmp && \
