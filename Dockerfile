@@ -112,6 +112,14 @@ RUN chmod 755 /root/ && \
     rustup component add --toolchain $TOOLCHAIN rustfmt clippy && \
     rm -rf /root/.rustup/toolchains/$TOOLCHAIN-$GNU_TARGET/share/
 
+# cargo-chef: Dozer's app Dockerfiles use it to build their dependencies as a layer of their own,
+# which CI's layer cache reuses until the dependencies change. Built for the host, so it runs
+# here before CARGO_BUILD_TARGET (below) points cargo at the musl target. The registry it was
+# fetched with is dropped: it is not needed to run it.
+ARG CARGO_CHEF_VERSION=0.1.78
+RUN cargo install cargo-chef --locked --version $CARGO_CHEF_VERSION && \
+    rm -rf /root/.cargo/registry /root/.cargo/git
+
 RUN echo "[target.$TARGET]\nlinker = \"$TARGET_CC\"\n" > /root/.cargo/config.toml
 
 # Build std sysroot for targets that doesn't have official std release
